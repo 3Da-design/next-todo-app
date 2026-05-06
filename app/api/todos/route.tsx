@@ -1,25 +1,34 @@
 import { NextResponse } from 'next/server';
-
-let todos: string[] = [];
+import { prisma } from '@lib/prisma';
 
 export async function GET() {
+  const todos = await prisma.todo.findMany({
+    orderBy: {id: 'desc'}
+  });
   return NextResponse.json(todos);
 }
 
 export async function POST(req: Request) {
-  const { todo } = await req.json();
-  todos.push(todo);
-  return NextResponse.json(todos);
+  const { text } = await req.json();
+  const newTodo = await prisma.todo.create({
+    data: { text }
+  });
+  return NextResponse.json(newTodo);
 }
 
 export async function DELETE(req: Request) {
-  const { index } = await req.json();
-  todos.splice(index, 1);
-  return NextResponse.json(todos);
+  const { id } = await req.json();
+  await prisma.todo.delete({
+    where: { id }
+  })
+  return NextResponse.json({ message: 'Deleted' });
 }
 
 export async function PATCH(req: Request) {
-  const { index, newTodo } = await req.json();
-  todos[index] = newTodo;
-  return NextResponse.json(todos);
+  const { id, text } = await req.json();
+  await prisma.todo.update({
+    where: { id },
+    data: { text }
+  })
+  return NextResponse.json({ message: 'Updated' });
 }
