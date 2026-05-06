@@ -17,3 +17,9 @@ export async function DELETE(req: Request) {
   todos.splice(index, 1);
   return NextResponse.json(todos);
 }
+
+export async function PATCH(req: Request) {
+  const { index, newTodo } = await req.json();
+  todos[index] = newTodo;
+  return NextResponse.json(todos);
+}

@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 export default function Home() {
   const [todos, setTodos] = useState<string[]>([]);
   const [input, setInput] = useState('');
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editText, setEditText] = useState('');
 
   const fetchTodos = async () => {
     const res = await fetch('/api/todos');
@@ -30,6 +32,26 @@ export default function Home() {
     })
     fetchTodos();
   }
+
+  const handleEdit = async (index: number) => {
+    setEditIndex(index);
+    setEditText(todos[index]);
+  }
+
+  const handleUpdate = async () => {
+    await fetch('/api/todos', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ index: editIndex, newTodo: editText })
+    })
+    setEditIndex(null);
+    setEditText('');
+    fetchTodos();
+  }
+
+  useEffect(() => {
+    fetchTodos();
+  }, [])
 
   return (
       <main className="min-h-screen bg-gray-100 p-6">
@@ -59,9 +81,33 @@ export default function Home() {
                 className="flex items-center justify-between bg-gray-50 p-2 rounded"
               >
                 <div className="flex-1">
-                  <span>{todo}</span>
+                  {editIndex === index ? (
+                    <input
+                      type="text"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      className="w-full border-b border-blue-400 px-1 focus:outline-none"
+                    />
+                  ) : (
+                    <span>{todo}</span>
+                  )}
                 </div>
                 <div className="flex gap-2 ml-2">
+                  {editIndex === index ? (
+                    <button
+                      onClick={() => handleUpdate()}
+                      className="text-green-600 hover:underline text-sm"
+                    >
+                      Update
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleEdit(index)}
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      Edit
+                    </button>
+                  )}
                   <button
                     onClick={() => handleDelete(index)}
                     className="text-red-500 hover:underline text-sm"
