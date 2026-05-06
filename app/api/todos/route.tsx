@@ -11,3 +11,9 @@ export async function POST(req: Request) {
   todos.push(todo);
   return NextResponse.json(todos);
 }
+
+export async function DELETE(req: Request) {
+  const { index } = await req.json();
+  todos.splice(index, 1);
+  return NextResponse.json(todos);
+}

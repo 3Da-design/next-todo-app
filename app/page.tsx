@@ -22,6 +22,15 @@ export default function Home() {
     fetchTodos();
   }
 
+  const handleDelete = async (index: number) => {
+    await fetch('/api/todos', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ index })
+    })
+    fetchTodos();
+  }
+
   return (
       <main className="min-h-screen bg-gray-100 p-6">
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
@@ -51,6 +60,14 @@ export default function Home() {
               >
                 <div className="flex-1">
                   <span>{todo}</span>
+                </div>
+                <div className="flex gap-2 ml-2">
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="text-red-500 hover:underline text-sm"
+                  >
+                    Delete
+                  </button>
                 </div>
               </li>
             ))}
