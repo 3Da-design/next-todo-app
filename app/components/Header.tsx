@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   return (
     <header className="bg-white shadow-md">
@@ -42,42 +44,70 @@ export default function Header() {
 
         {/* PC */}
         <nav className="hidden md:flex items-center space-x-4 md:space-x-6">
-          <Link href="/">
-            <span className="cursor-pointer px-3 py-1 hover:text-blue-600">
-              Menu1
-            </span>
-          </Link>
-          <Link href="/">
-            <span className="cursor-pointer px-3 py-1 hover:text-blue-600">
-              Menu2
-            </span>
-          </Link>
-          <Link href="/">
-            <span className="cursor-pointer px-3 py-1 hover:text-blue-600">
-              Menu3
-            </span>
-          </Link>
+          {status === 'loading' ? (
+            <span className="ml-4">Loading...</span>
+          ) : session ? (
+            <Link
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                signOut({ callbackUrl: '/'});
+              }}
+              className="hover: underline cursor-pointer"
+            >
+                Logout
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/auth/register"
+                className="hover: underline cursor-pointer"
+              >
+                  Register
+              </Link>
+              <Link
+                href="/auth/signin"
+                className="hover: underline cursor-pointer"
+              >
+                  Sign In
+              </Link>
+            </>
+          )}
         </nav>
       </div>
 
       {/* Smartphone */}
       {menuOpen && (
         <nav className="md:hidden px-4 pb-4 space-y-2 border-t border-gray-300 text-gray-700 font-medium">
-          <Link href="/">
-            <span className="block py-2 hover:text-blue-600 cursor-pointer">
-              Menu1
-            </span>
-          </Link>
-          <Link href="/">
-            <span className="block py-2 hover:text-blue-600 cursor-pointer">
-              Menu2
-            </span>
-          </Link>
-          <Link href="/">
-            <span className="block py-2 hover:text-blue-600 cursor-pointer">
-              Menu3
-            </span>
-          </Link>
+          {status === 'loading' ? (
+            <span className="ml-4">Loading...</span>
+          ) : session ? (
+            <Link
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                signOut({ callbackUrl: '/'});
+              }}
+              className="block py-2 hover: underline cursor-pointer"
+            >
+                Logout
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/auth/register"
+                className="block py-2 hover: underline cursor-pointer"
+              >
+                  Register
+              </Link>
+              <Link
+                href="/auth/signin"
+                className="block py-2 hover: underline cursor-pointer"
+              >
+                  Sign In
+              </Link>
+            </>
+          )}
         </nav>
       )}
     </header>
