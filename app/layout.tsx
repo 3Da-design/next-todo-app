@@ -4,6 +4,8 @@ import './globals.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import SessionWrapper from './components/SessionWrapper';
+import FlashMessage from './components/FlashMessage';
+import { FlashMessageProvider } from './context/FlashMessageContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,16 +28,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <SessionWrapper>
-          <Header />
-            {children}
-          <Footer />
-        </SessionWrapper>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+        <FlashMessageProvider>
+          <SessionWrapper>
+            <Header />
+            <FlashMessage />
+              {children}
+            <Footer />
+          </SessionWrapper>
+        </FlashMessageProvider>
       </body>
     </html>
   );

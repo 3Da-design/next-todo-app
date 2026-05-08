@@ -18,9 +18,22 @@ export async function GET() {
       where: { userId: Number(user.id) },
       orderBy: {id: 'desc'}
     });
-    return NextResponse.json(todos);
+    return NextResponse.json(
+      {
+        status: 'success',
+        message: 'Todos fetched successfully.',
+        todos: todos
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      {
+        status: 'error',
+        message: 'Failed to fetch todos.',
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -31,9 +44,22 @@ export async function POST(req: Request) {
     const newTodo = await prisma.todo.create({
       data: { text, userId: Number(user.id) }
     });
-    return NextResponse.json(newTodo);
+    return NextResponse.json(
+      {
+        status: 'success',
+        message: 'Todo created successfully.',
+        todo: newTodo
+      },
+      { status: 201 }
+    );
   } catch (error) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      {
+        status: 'error',
+        message: 'Failed to create todo.',
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -45,15 +71,33 @@ export async function DELETE(req: Request) {
     const todo = await prisma.todo.findUnique({ where: { id } });
 
     if (!todo || todo.userId !== Number(user.id)) {
-      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+      return NextResponse.json(
+        {
+          status: 'error',
+          message: 'You do not have permission to delete Todo.',
+        },
+        { status: 403 }
+      );
     }
 
     await prisma.todo.delete({
       where: { id }
     })
-    return NextResponse.json({ message: 'Deleted' });
+    return NextResponse.json(
+      {
+        status: 'success',
+        message: 'Todo deleted successfully.',
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      {
+        status: 'error',
+        message: 'Failed to delete Todo.',
+      },
+      { status: 403 }
+    );
   }
 }
 
@@ -65,15 +109,34 @@ export async function PATCH(req: Request) {
     const todo = await prisma.todo.findUnique({ where: { id } });
 
     if (!todo || todo.userId !== Number(user.id)) {
-      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+      return NextResponse.json(
+        {
+          status: 'error',
+          message: 'You do not have permission to update Todo.',
+        },
+        { status: 403 }
+      );
     }
 
-    await prisma.todo.update({
+    const updated = await prisma.todo.update({
       where: { id },
       data: { text }
     })
-    return NextResponse.json({ message: 'Updated' });
+    return NextResponse.json(
+      {
+        status: 'success',
+        message: 'Todo updated successfully.',
+        todo: updated
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      {
+        status: 'error',
+        message: 'Failed to update Todo.',
+      },
+      { status: 500 }
+    );
   }
 }

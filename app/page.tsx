@@ -1,41 +1,64 @@
 'use client'
 
+import { useEffect, useState } from 'react';
+import { useFlashMessage } from './context/FlashMessageContext';
+
 type Todo = {
   id: number;
   text: string;
 }
-
-import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState('');
   const [editId, setEditId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
+  const { showMessage } = useFlashMessage();
 
   const fetchTodos = async () => {
     const res = await fetch('/api/todos');
     const data = await res.json();
-    setTodos(data);
+
+    if (data.status === 'success') {
+      setTodos(data.todos);
+    } else {
+      showMessage(data.message, 'error');
+    }
   }
 
   const handleAdd = async () => {
-    await fetch('/api/todos', {
+    const res = await fetch('/api/todos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: input })
     });
-    setInput('');
-    fetchTodos();
+
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      showMessage(data.message, 'success');
+      setInput('');
+      fetchTodos();
+    } else {
+      showMessage(data.message, 'error');
+    }
   }
 
   const handleDelete = async (id: number) => {
-    await fetch('/api/todos', {
+    const res =await fetch('/api/todos', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
-    })
-    fetchTodos();
+    });
+
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      showMessage(data.message, 'success');
+      fetchTodos();
+    } else {
+      showMessage(data.message, 'error');
+    }
   }
 
   const handleEdit = async (todo: Todo) => {
@@ -44,14 +67,22 @@ export default function Home() {
   }
 
   const handleUpdate = async () => {
-    await fetch('/api/todos', {
+    const res = await fetch('/api/todos', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: editId, text: editText })
     })
-    setEditId(null);
-    setEditText('');
-    fetchTodos();
+
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      showMessage(data.message, 'success');
+      setEditId(null);
+      setEditText('');
+      fetchTodos();
+    } else {
+      showMessage(data.message, 'error');
+    }
   }
 
   useEffect(() => {
