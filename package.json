@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "studio": "prisma studio --port 5555",
-    "dev:all": "concurrently -n next,studio -c blue,green \"next dev\" \"prisma studio --port 5555\"",
+    "dev:all": "concurrently -n next,open3000,studio -c blue,magenta,green \"next dev\" \"sh -c 'sleep 3 && open http://localhost:3000'\" \"sh -c 'sleep 6 && prisma studio --port 5555'\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
