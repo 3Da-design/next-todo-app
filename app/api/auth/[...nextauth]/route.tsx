@@ -25,8 +25,9 @@ export const authOptions: NextAuthOptions = {
         if(!isValid) return null;
 
         return {
-          ...user,
-          id: String(user.id)
+          id: String(user.id),
+          email: user.email,
+          name: user.name
         };
       }
     })
@@ -34,6 +35,20 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/signin"
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token?.id && session.user) {
+        session.user.id = String(token.id);
+      }
+      return session;
+    }
   }
 }
 
