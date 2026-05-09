@@ -55,7 +55,7 @@ export default function RegisterPage() {
         className="bg-white p-8 rounded shadow-md w-full max-w-md"
         noValidate
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">User Registration</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Registration</h2>
 
         <div className="mb-4">
           <label className="block text-gray-700 mb-2">Name</label>

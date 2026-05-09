@@ -74,6 +74,12 @@ export default function Header() {
               </Link>
             </>
           )}
+          <Link
+            href="/contact"
+            className="hover: underline cursor-pointer"
+          >
+              Contact
+          </Link>
           <ThemeToggle />
         </nav>
       </div>
@@ -110,6 +116,12 @@ export default function Header() {
               </Link>
             </>
           )}
+          <Link
+            href="/contact"
+            className="hover: underline cursor-pointer"
+          >
+              Contact
+          </Link>
           <ThemeToggle />
         </nav>
       )}
