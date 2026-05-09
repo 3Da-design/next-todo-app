@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import SessionWrapper from './components/SessionWrapper';
 import FlashMessage from './components/FlashMessage';
 import { FlashMessageProvider } from './context/FlashMessageContext';
+import { ThemeProvider } from 'next-themes';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,16 +29,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-        <FlashMessageProvider>
-          <SessionWrapper>
-            <Header />
-            <FlashMessage />
-              {children}
-            <Footer />
-          </SessionWrapper>
-        </FlashMessageProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <FlashMessageProvider>
+            <SessionWrapper>
+              <Header />
+              <FlashMessage />
+                {children}
+              <Footer />
+            </SessionWrapper>
+          </FlashMessageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

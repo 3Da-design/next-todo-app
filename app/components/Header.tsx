@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
+import ThemeToggle from './ThemeToggle';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: session, status } = useSession();
 
   return (
-    <header className="bg-white shadow-md">
+    <header className="bg-white dark:bg-black shadow-md">
       <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/">
           <span className="text-xl font-bold text-blue-600 hover:underline cursor-pointer">
@@ -43,7 +44,7 @@ export default function Header() {
         </button>
 
         {/* PC */}
-        <nav className="hidden md:flex items-center space-x-4 md:space-x-6">
+        <nav className="hidden md:flex items-center space-x-4 md:space-x-6 text-gray-700 dark:text-white">
           {status === 'loading' ? (
             <span className="ml-4">Loading...</span>
           ) : session ? (
@@ -73,12 +74,13 @@ export default function Header() {
               </Link>
             </>
           )}
+          <ThemeToggle />
         </nav>
       </div>
 
       {/* Smartphone */}
       {menuOpen && (
-        <nav className="md:hidden px-4 pb-4 space-y-2 border-t border-gray-300 text-gray-700 font-medium">
+        <nav className="md:hidden px-4 pb-4 space-y-2 border-t border-gray-300 text-gray-700 dark:text-white font-medium">
           {status === 'loading' ? (
             <span className="ml-4">Loading...</span>
           ) : session ? (
@@ -108,6 +110,7 @@ export default function Header() {
               </Link>
             </>
           )}
+          <ThemeToggle />
         </nav>
       )}
     </header>
