@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { useFlashMessage } from './context/FlashMessageContext';
+import { z } from 'zod';
 
 type Todo = {
   id: number;
   text: string;
 }
+
+const todoSchema = z.object({
+  text: z.string().min(1, 'Input is required.').max(100, 'Please enter your response within 100 characters.')
+});
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -14,6 +19,8 @@ export default function Home() {
   const [editId, setEditId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
   const { showMessage } = useFlashMessage();
+  const [inputError, setInputError] = useState('');
+  const [editError, setEditError] = useState('');
 
   const fetchTodos = async () => {
     const res = await fetch('/api/todos');
@@ -27,6 +34,15 @@ export default function Home() {
   }
 
   const handleAdd = async () => {
+    const result = todoSchema.safeParse({ text: input });
+
+    if (!result.success) {
+      setInputError(result.error.issues[0].message);
+      return;
+    }
+
+    setInputError('');
+
     const res = await fetch('/api/todos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -67,6 +83,15 @@ export default function Home() {
   }
 
   const handleUpdate = async () => {
+    const result = todoSchema.safeParse({ text: editText });
+
+    if (!result.success) {
+      setEditError(result.error.issues[0].message);
+      return;
+    }
+
+    setEditError('');
+
     const res = await fetch('/api/todos', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -110,6 +135,9 @@ export default function Home() {
             </button>
           </div>
 
+          {/* Validation Error */}
+          {inputError && <p className="text-red-500 text-sm mt-1">{inputError}</p>}
+
           <ul className="space-y-2">
             {todos.map((todo) => (
               <li
@@ -127,7 +155,11 @@ export default function Home() {
                   ) : (
                     <span>{todo.text}</span>
                   )}
+
+                  {/* Validation Error */}
+                  {editId === todo.id && editError && <p className="text-red-500 text-sm mt-1">{editError}</p>}
                 </div>
+
                 <div className="flex gap-2 ml-2">
                   {editId === todo.id ? (
                     <button
